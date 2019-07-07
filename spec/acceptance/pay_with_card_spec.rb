@@ -26,7 +26,7 @@ feature 'User sign in', %q{
 
       click_button 'Pay 5,00 $'
 
-      expect(page).to have_content("input.invalid")
+      expect(page).to have_content("Thanks, you paid $5.00")
     end
 
     scenario 'Registered user try to pay by card with invalid params', js: true do

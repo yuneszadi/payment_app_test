@@ -1,5 +1,4 @@
 <div class ='container'>
-  <h1>Store</h1>
 
   <div class='product'>
     <h2>Buy this for $5</h2>
@@ -13,7 +12,6 @@
         </div>
       <% end %>
       <label class="amount">
-        <span>Amount: $5.00</span>
       </label>
     </article>
 
@@ -23,5 +21,15 @@
             data-amount="500"
             data-locale="auto"></script>
   <% end %>
+
+<p> OR </p>
+
+  <form method="get" action="/banks/new">
+    <button type="submit" class="stripe-button-el" style="visibility: visible;">
+      <span style="display: block; min-height: 30px;">Pay with ACH
+      </span>
+    </button>
+</form>
+
 
 </div>

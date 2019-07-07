@@ -1,0 +1,96 @@
+<%= content_for :page_title, 'ACH Payment Example' %>
+  <h1>
+    Enter your bank details
+  </h1>
+
+<form action="/banks" method="POST" id="payment-form">
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+
+    <p><label>Bank Country</label>
+      <select id="country" data-stripe="country">
+        <option value="US">United States</option>
+      </select>
+
+    <p><label>Account Currency</label>
+      <select id="currency" data-stripe="currency">
+        <option value="usd">USD</option>
+      </select>
+
+    <p><label>Full Legal Name</label>
+      <input id="account_holder_name" type="text" data-stripe="account_holder_name" autocomplete="off">
+
+    <p><label>Account Type</label>
+      <select id="account_holder_type" data-stripe="account_holder_type">
+        <option value="individual">Individual</option>
+        <option value="company">Company</option>
+      </select>
+
+    <p><label id="routing_number_label">Routing Number</label>
+      <input id="routing_number" type="tel" size="12" data-stripe="routing_number" placeholder="111000000" autocomplete="off">
+
+    <p><label id="account_number_label">Account Number</label>
+      <input id="account_number" type="tel" size="20" data-stripe="account_number" placeholder="000123456789" autocomplete="off">
+
+    <p><button type="submit">
+      <span></span> Add bank account
+    </button><p>
+</form>
+
+<script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.payment/1.4.1/jquery.payment.js"></script>
+<script>
+  Stripe.setPublishableKey('pk_test_GTNkmDf9RGVDIU2Hd9GhJct90080mcsBGj');
+  $(function() {
+    var $form = $('#payment-form');
+    $form.submit(function(event) {
+      $form.find('.has-error').removeClass('has-error');
+      $form.find('.submit').prop('disabled', true).html("<i class='fa fa-spinner fa-spin'></i> Creating account...");
+      Stripe.bankAccount.createToken($form, stripeResponseHandler);
+      return false;
+    });
+    $('#currency').change(function(){
+      $('#routing_number_div').show();
+      $('#account_number_label').text('Account Number').next('input').attr('placeholder', '');
+      $('#routing_number').attr('data-stripe', 'routing_number');
+      switch (this.value) {
+        case "usd":
+          $('#routing_number_label').text('Routing Number').next('input').attr('placeholder', '111000000');
+          break;
+        case "eur":
+          $('#routing_number_div').hide();
+          $('#routing_number').removeAttr('data-stripe');
+          $('#account_number_label').text('IBAN').next('input').attr('placeholder','XX9828737432389');
+          break;
+        case "cad":
+          $('#routing_number_label').text('Transit & Institution Number');
+          break;
+        case "gbp":
+          $('#routing_number_label').text('Sort Code').next('input').attr('placeholder', '12-34-56');
+          break;
+        case "mxn":
+          $('#routing_number_label').text('CLABE');
+          break;
+        case 'aud': case "nzd":
+          $('#routing_number_label').text('BSB').next('input').attr('placeholder', '123456');
+          break;
+        case 'sgd': case "jpy": case "brl": case "hkd":
+          $('#routing_number_label').text('Bank / Branch Code');
+          break;
+      }
+    });
+  });
+  function stripeResponseHandler(status, response) {
+    var $form = $('#payment-form');
+    if (response.error) {
+      $form.find('.errors').text(response.error.message).addClass('alert alert-danger');
+      $form.find('.' + response.error.param).parent('.form-group').addClass('has-error');
+      $form.find('button').prop('disabled', false).text('Add bank account'); // Re-enable submission
+    }
+    else {
+      $form.find('.submit').html("<i class='fa fa-check'></i> Account added");
+      var token = response.id;
+      $form.append($('<input type="hidden" name="stripeToken" />').val(token));
+      $form.get(0).submit();
+    }
+  }
+</script>
