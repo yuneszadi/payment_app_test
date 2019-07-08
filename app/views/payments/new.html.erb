@@ -1,0 +1,20 @@
+<%= content_for :page_title, 'ACH Payment Example' %>
+  <form action="/payments" method="post" id="payment-form">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+      <label>Payment amount</label>
+        <span class="input-group-addon">$</span>
+          <p><input class="form-control input-lg" type="text" placeholder="5.00" name="amount">
+
+          <input type="hidden" name="customer" value="<%= @customer.id %>">
+          <input type="hidden" name="bank_account" value="<%= @bank_account.id %>"></p>
+      <p><button class="btn">
+        Make a payment
+      </button></p>
+    </form>
+<script>
+  $(function() {
+    $('#payment-form').on('submit', function(){
+      $('.submit').prop('disabled', true).html("<i class='fa fa-spinner fa-spin'></i> Charging your bank account...");
+    });
+  });
+</script>

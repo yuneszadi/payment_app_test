@@ -1,0 +1,44 @@
+<%= content_for :page_title, 'Verify your bank account' %>
+
+  <h1>
+    Verify your bank account
+  </h1>
+
+  We sent two small depsit amounts to your bank account. Log in to your bank's website or app and enter the amounts you see in the fields below.
+
+  <form action="/microdeposits" method="POST" id="verify-form">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+
+      <p><label>Deposit amount 1</label>
+        <span>$.</span>
+        <input type="text" name="amount1" placeholder="32"></p>
+
+      <p><label>Deposit amount 2</label>
+        <span>$.</span>
+        <input type="text" name="amount2" placeholder="45"></p>
+
+      <input type="hidden" name="customer" value="<%= @customer %>">
+      <input type="hidden" name="bank_account" value="<%= @bank_account %>">
+
+      <button class="btn" type="submit">
+        <span class="fa fa-bank"></span> Verify bank account
+      </button>
+  </form>
+
+<script>
+  $(function() {
+    $('.btn').click(function(){
+      $('.errors').removeClass('alert alert-danger').text('');
+      $('.btn').prop('disabled', true).html("<i class='fa fa-spinner fa-spin'></i> Verifying account...");
+      if ($.isNumeric($('input[name=amount1], input[name=amount2]').val())){
+        $('#verify-form').submit();
+      }
+      else {
+        $('.errors').text('Please enter a valid amount.').addClass('alert alert-danger');
+        $('.input-group').parent('.form-group').addClass('has-error');
+        $('.btn').prop('disabled', false).html("<span class='fa fa-bank'></span> Verify bank account");
+      }
+      return false;
+    });
+  });
+</script>

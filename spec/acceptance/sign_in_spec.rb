@@ -9,7 +9,7 @@ feature 'User sign in', %q{
 
   given(:user) { create(:user) }
 
-  scenario 'Registered user try to sign in'  do
+  scenario 'Registered user try to sign in' do 
     visit new_user_session_path
     fill_in 'Email', with: user.email
     fill_in 'Password', with: user.password
